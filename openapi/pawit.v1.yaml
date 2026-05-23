@@ -1,0 +1,47 @@
+openapi: 3.1.0
+info:
+  title: PawIt VetCare API
+  version: 0.1.0
+servers:
+  - url: https://api.pawit.care/api/v1
+paths:
+  /patients:
+    get:
+      summary: List pet records
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Pet records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PetRecord"
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: pawit_access
+  schemas:
+    PetRecord:
+      type: object
+      required: [id, petName, ownerName, species]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        age:
+          type: string
