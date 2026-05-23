@@ -1,27 +1,59 @@
 openapi: 3.1.0
 info:
   title: PawIt VetCare API
-  version: 0.1.0
+  version: 0.2.0
 servers:
   - url: https://api.pawit.care/api/v1
+security:
+  - cookieAuth: []
 paths:
-  /patients:
+  /product-spec:
+    get:
+      summary: Get approved PawIt v1 product policy
+      responses:
+        "200":
+          description: Product policy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductSpec"
+  /role-policies:
+    get:
+      summary: List PawIt role and permission policies
+      responses:
+        "200":
+          description: Role policies
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RolePolicy"
+  /pets:
     get:
       summary: List pet records
-      security:
-        - cookieAuth: []
       responses:
         "200":
           description: Pet records
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PetRecord"
+                $ref: "#/components/schemas/PetRecordList"
+  /patients:
+    get:
+      summary: List pet records
+      description: Legacy alias for `/pets` while the hospital UI migrates to veterinary naming.
+      responses:
+        "200":
+          description: Pet records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetRecordList"
 components:
   securitySchemes:
     cookieAuth:
@@ -29,9 +61,138 @@ components:
       in: cookie
       name: pawit_access
   schemas:
+    ProductSpec:
+      type: object
+      required:
+        - productName
+        - shortName
+        - supportedSpecies
+        - supportedAppointmentTypes
+        - supportedAppointmentStatuses
+        - supportedLabStatuses
+        - paymentProvider
+        - currency
+        - petParentAuth
+        - telemedicine
+        - labs
+        - cancellationPolicy
+        - recordDeletionPolicy
+        - aiAdvisoryEnabled
+        - groomingEnabled
+        - hipaaAligned
+      properties:
+        productName:
+          type: string
+          const: PawIt VetCare
+        shortName:
+          type: string
+          const: PawIt
+        supportedSpecies:
+          type: array
+          items:
+            $ref: "#/components/schemas/Species"
+        supportedAppointmentTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppointmentType"
+        supportedAppointmentStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppointmentStatus"
+        supportedLabStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabOrderStatus"
+        paymentProvider:
+          type: string
+          const: stripe
+        currency:
+          type: string
+          const: USD
+        petParentAuth:
+          type: string
+          const: email_password
+        telemedicine:
+          type: object
+          required: [mode, builtInVideoRoomsEnabled]
+          properties:
+            mode:
+              type: string
+              const: manual_meeting_link
+            builtInVideoRoomsEnabled:
+              type: boolean
+              const: false
+        labs:
+          type: object
+          required: [internalLabsEnabled, externalLabsEnabled, externalIntegrationMode, thirdPartyApiIntegrationInV1]
+          properties:
+            internalLabsEnabled:
+              type: boolean
+              const: true
+            externalLabsEnabled:
+              type: boolean
+              const: true
+            externalIntegrationMode:
+              type: string
+              const: manual_status_based
+            thirdPartyApiIntegrationInV1:
+              type: boolean
+              const: false
+        cancellationPolicy:
+          type: object
+          required: [defaultCutoffHours, tenantConfigurable, locationOverride, staffOverrideAllowed]
+          properties:
+            defaultCutoffHours:
+              type: integer
+              const: 24
+            tenantConfigurable:
+              type: boolean
+              const: true
+            locationOverride:
+              type: boolean
+              const: true
+            staffOverrideAllowed:
+              type: boolean
+              const: true
+        recordDeletionPolicy:
+          type: string
+          const: archive_cancel_void_only
+        aiAdvisoryEnabled:
+          type: boolean
+          const: false
+        groomingEnabled:
+          type: boolean
+          const: false
+        hipaaAligned:
+          type: boolean
+          const: true
+    RolePolicy:
+      type: object
+      required: [role, description, permissions]
+      properties:
+        role:
+          $ref: "#/components/schemas/Role"
+        description:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        restrictions:
+          type: array
+          items:
+            type: string
+    PetRecordList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PetRecord"
     PetRecord:
       type: object
-      required: [id, petName, ownerName, species]
+      required: [id, petName, ownerName, species, guardianCount, documentsCount]
       properties:
         id:
           type: string
@@ -40,8 +201,68 @@ components:
         ownerName:
           type: string
         species:
-          type: string
+          $ref: "#/components/schemas/Species"
         breed:
           type: string
         age:
           type: string
+        sex:
+          type: string
+        phone:
+          type: string
+        lastVisit:
+          type: string
+        vaccinesDue:
+          type: integer
+        openPlans:
+          type: integer
+        guardianCount:
+          type: integer
+        documentsCount:
+          type: integer
+    Role:
+      type: string
+      enum:
+        - SuperAdmin
+        - ClinicAdmin
+        - Veterinarian
+        - Receptionist
+        - VetTechnician
+        - LabTechnician
+        - PetParent
+    Species:
+      type: string
+      enum: [dog, cat]
+    AppointmentType:
+      type: string
+      enum:
+        - in_clinic
+        - telemedicine
+        - walk_in
+        - follow_up
+        - vaccination
+        - lab_diagnostic
+        - procedure_consult
+    AppointmentStatus:
+      type: string
+      enum:
+        - requested
+        - scheduled
+        - confirmed
+        - checked_in
+        - waiting
+        - in_progress
+        - completed
+        - cancelled
+        - no_show
+        - needs_reschedule
+        - rejected
+    LabOrderStatus:
+      type: string
+      enum:
+        - ordered
+        - sample_collected
+        - sent_out
+        - in_progress
+        - completed
+        - cancelled
