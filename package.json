@@ -1,7 +1,8 @@
 {
   "scripts": {
     "lint": "npx @redocly/cli lint openapi/pawit.v1.yaml",
-    "generate": "openapi-typescript openapi/pawit.v1.yaml -o src/pawit-api.ts"
+    "generate": "openapi-typescript openapi/pawit.v1.yaml -o src/pawit-api.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "openapi-typescript": "^7.0.0"
