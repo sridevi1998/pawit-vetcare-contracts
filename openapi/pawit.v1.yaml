@@ -437,6 +437,89 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LabTestList"
+    post:
+      tags: [Clinical]
+      summary: Create an internal or external lab order
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLabOrderRequest"
+      responses:
+        "201":
+          description: Lab order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/lab-tests/{id}/status:
+    post:
+      tags: [Clinical]
+      summary: Process a lab order through workflow statuses
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLabOrderStatusRequest"
+      responses:
+        "200":
+          description: Lab order status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/lab-tests/{id}/report:
+    post:
+      tags: [Clinical]
+      summary: Upload lab result metadata and optionally share it
+      description: >
+        Lab technicians may upload/process results. Sharing a result with pet
+        parents requires `lab_result.share`.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadLabResultRequest"
+      responses:
+        "201":
+          description: Lab result uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /api/v1/billing:
     get:
       tags: [Billing]
@@ -1192,6 +1275,58 @@ components:
         reportUrl:
           type: string
         sharedWithPetParent:
+          type: boolean
+    CreateLabOrderRequest:
+      type: object
+      required: [locationId, petId, testType]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        appointmentId:
+          type: string
+        labCenterId:
+          type: string
+        testType:
+          type: string
+          minLength: 1
+        sampleType:
+          type: string
+        priority:
+          type: string
+    UpdateLabOrderStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/LabOrderStatus"
+        reason:
+          type: string
+    UploadLabResultRequest:
+      type: object
+      properties:
+        resultNotes:
+          type: string
+        reportObjectPath:
+          type: string
+        shareWithPetParent:
+          type: boolean
+        completedAt:
+          type: string
+          format: date-time
+        markOrderCompleted:
+          type: boolean
+      anyOf:
+        - required: [resultNotes]
+        - required: [reportObjectPath]
+    LabOrderMutationResult:
+      type: object
+      required: [labTest]
+      properties:
+        labTest:
+          $ref: "#/components/schemas/LabTest"
+        idempotent:
           type: boolean
     BillingResponse:
       type: object

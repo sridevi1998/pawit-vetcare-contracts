@@ -955,7 +955,140 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /** Create an internal or external lab order */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Safe retry key for mutation requests. */
+                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateLabOrderRequest"];
+                };
+            };
+            responses: {
+                /** @description Lab order created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LabOrderMutationResult"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                409: components["responses"]["Conflict"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/lab-tests/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process a lab order through workflow statuses */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Safe retry key for mutation requests. */
+                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                };
+                path: {
+                    /** @description Resource identifier. */
+                    id: components["parameters"]["PathID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateLabOrderStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description Lab order status updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LabOrderMutationResult"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/lab-tests/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload lab result metadata and optionally share it
+         * @description Lab technicians may upload/process results. Sharing a result with pet parents requires `lab_result.share`.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Safe retry key for mutation requests. */
+                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                };
+                path: {
+                    /** @description Resource identifier. */
+                    id: components["parameters"]["PathID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UploadLabResultRequest"];
+                };
+            };
+            responses: {
+                /** @description Lab result uploaded */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LabOrderMutationResult"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1430,6 +1563,31 @@ export interface components {
             status: components["schemas"]["LabOrderStatus"];
             reportUrl?: string;
             sharedWithPetParent: boolean;
+        };
+        CreateLabOrderRequest: {
+            locationId: string;
+            petId: string;
+            appointmentId?: string;
+            labCenterId?: string;
+            testType: string;
+            sampleType?: string;
+            priority?: string;
+        };
+        UpdateLabOrderStatusRequest: {
+            status: components["schemas"]["LabOrderStatus"];
+            reason?: string;
+        };
+        UploadLabResultRequest: {
+            resultNotes?: string;
+            reportObjectPath?: string;
+            shareWithPetParent?: boolean;
+            /** Format: date-time */
+            completedAt?: string;
+            markOrderCompleted?: boolean;
+        } | unknown | unknown;
+        LabOrderMutationResult: {
+            labTest: components["schemas"]["LabTest"];
+            idempotent?: boolean;
         };
         BillingResponse: {
             metrics: components["schemas"]["Metric"][];
