@@ -1,14 +1,75 @@
 openapi: 3.1.0
 info:
   title: PawIt VetCare API
-  version: 0.2.0
+  version: 0.3.0
+  summary: Contract for the PawIt VetCare multi-tenant veterinary HMS API.
+  description: >
+    PawIt VetCare is a serverless, multi-tenant veterinary hospital management
+    platform. This contract is the source of truth for backend implementation,
+    frontend API clients, and contract tests.
 servers:
-  - url: https://api.pawit.care/api/v1
+  - url: https://api.pawit.care
+    description: Production placeholder
+  - url: http://localhost:8080
+    description: Local development
 security:
   - cookieAuth: []
+  - bearerAuth: []
+tags:
+  - name: System
+  - name: Current User
+  - name: Product Policy
+  - name: Dashboard
+  - name: Appointments
+  - name: Queue
+  - name: Pets
+  - name: Clinical
+  - name: Billing
+  - name: Analytics
+  - name: Staff
 paths:
-  /product-spec:
+  /healthz:
     get:
+      tags: [System]
+      summary: Public liveness check
+      security: []
+      responses:
+        "200":
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /readyz:
+    get:
+      tags: [System]
+      summary: Public readiness check
+      security: []
+      responses:
+        "200":
+          description: Service dependencies are ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadyResponse"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/me:
+    get:
+      tags: [Current User]
+      summary: Get current user and tenant context
+      responses:
+        "200":
+          description: Current user context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/v1/product-spec:
+    get:
+      tags: [Product Policy]
       summary: Get approved PawIt v1 product policy
       responses:
         "200":
@@ -17,8 +78,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductSpec"
-  /role-policies:
+  /api/v1/role-policies:
     get:
+      tags: [Product Policy]
       summary: List PawIt role and permission policies
       responses:
         "200":
@@ -26,16 +88,219 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required: [items]
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/RolePolicy"
-  /pets:
+                $ref: "#/components/schemas/RolePolicyList"
+  /api/v1/navigation:
     get:
-      summary: List pet records
+      tags: [Dashboard]
+      summary: Get hospital portal navigation sections
+      responses:
+        "200":
+          description: Navigation sections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NavigationResponse"
+  /api/v1/dashboard/summary:
+    get:
+      tags: [Dashboard]
+      summary: Get top-level operational metrics
+      responses:
+        "200":
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricList"
+  /api/v1/appointments:
+    get:
+      tags: [Appointments]
+      summary: List appointments
+      responses:
+        "200":
+          description: Appointment list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentList"
+    post:
+      tags: [Appointments]
+      summary: Create a staff-managed appointment or pet-parent appointment request
+      description: >
+        Pet parents create requested appointments. Staff users with appointment
+        management permission can create scheduled appointments. Telemedicine
+        appointments use manually entered meeting links in v1.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppointmentRequest"
+      responses:
+        "201":
+          description: Appointment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/appointments/{id}/cancel:
+    post:
+      tags: [Appointments]
+      summary: Cancel an appointment with clinic cutoff enforcement
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelAppointmentRequest"
+      responses:
+        "200":
+          description: Appointment cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/calendar:
+    get:
+      tags: [Appointments]
+      summary: Get appointment calendar data
+      responses:
+        "200":
+          description: Calendar data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalendarResponse"
+  /api/v1/queue:
+    get:
+      tags: [Queue]
+      summary: List active queue entries
+      responses:
+        "200":
+          description: Queue entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueEntryList"
+  /api/v1/queue/walk-ins:
+    post:
+      tags: [Queue]
+      summary: Register a walk-in queue entry and linked appointment
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterWalkInRequest"
+      responses:
+        "201":
+          description: Walk-in registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueueMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/queue/{id}/call:
+    post:
+      tags: [Queue]
+      summary: Mark a queue entry as called
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateQueueBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/QueueMutationOK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/queue/{id}/start:
+    post:
+      tags: [Queue]
+      summary: Move a queue entry into consultation
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateQueueBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/QueueMutationOK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/queue/{id}/complete:
+    post:
+      tags: [Queue]
+      summary: Complete a queue entry and linked appointment
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateQueueBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/QueueMutationOK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/queue/{id}/cancel:
+    post:
+      tags: [Queue]
+      summary: Cancel a queue entry and linked appointment
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        $ref: "#/components/requestBodies/UpdateQueueBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/QueueMutationOK"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/pets:
+    get:
+      tags: [Pets]
+      summary: List dog/cat pet records
       responses:
         "200":
           description: Pet records
@@ -43,8 +308,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PetRecordList"
-  /patients:
+    post:
+      tags: [Pets]
+      summary: Create a dog/cat pet record with first guardian
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePetRequest"
+      responses:
+        "201":
+          description: Pet created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/pets/{id}/archive:
+    post:
+      tags: [Pets]
+      summary: Archive a pet record with audit reason
+      description: PawIt never hard-deletes clinical records from the application API.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchivePetRequest"
+      responses:
+        "200":
+          description: Pet archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/pets/{id}/documents:
+    post:
+      tags: [Pets]
+      summary: Register uploaded pet document metadata
+      description: >
+        The file itself is stored through a signed upload flow. This endpoint
+        records the document metadata once storage has accepted the object.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadPetDocumentRequest"
+      responses:
+        "201":
+          description: Document metadata registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetDocumentMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/patients:
     get:
+      tags: [Pets]
       summary: List pet records
       description: Legacy alias for `/pets` while the hospital UI migrates to veterinary naming.
       responses:
@@ -54,13 +404,330 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PetRecordList"
+  /api/v1/prescription-templates:
+    get:
+      tags: [Clinical]
+      summary: List veterinary prescription templates
+      responses:
+        "200":
+          description: Prescription templates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionTemplateList"
+  /api/v1/clinical-notes:
+    get:
+      tags: [Clinical]
+      summary: List clinical notes and consultations
+      responses:
+        "200":
+          description: Clinical notes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicalNoteList"
+  /api/v1/lab-tests:
+    get:
+      tags: [Clinical]
+      summary: List lab tests and diagnostic reports
+      responses:
+        "200":
+          description: Lab tests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabTestList"
+    post:
+      tags: [Clinical]
+      summary: Create an internal or external lab order
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLabOrderRequest"
+      responses:
+        "201":
+          description: Lab order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/lab-tests/{id}/status:
+    post:
+      tags: [Clinical]
+      summary: Process a lab order through workflow statuses
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLabOrderStatusRequest"
+      responses:
+        "200":
+          description: Lab order status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/lab-tests/{id}/report:
+    post:
+      tags: [Clinical]
+      summary: Upload lab result metadata and optionally share it
+      description: >
+        Lab technicians may upload/process results. Sharing a result with pet
+        parents requires `lab_result.share`.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadLabResultRequest"
+      responses:
+        "201":
+          description: Lab result uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabOrderMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/billing:
+    get:
+      tags: [Billing]
+      summary: Get billing metrics and invoices
+      responses:
+        "200":
+          description: Billing dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingResponse"
+  /api/v1/analytics:
+    get:
+      tags: [Analytics]
+      summary: Get tenant analytics
+      responses:
+        "200":
+          description: Analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analytics"
+  /api/v1/feedback:
+    get:
+      tags: [Analytics]
+      summary: Get feedback metrics and reviews
+      responses:
+        "200":
+          description: Feedback dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedbackResponse"
+  /api/v1/doctors:
+    get:
+      tags: [Staff]
+      summary: List veterinarians
+      responses:
+        "200":
+          description: Veterinarians
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonList"
+  /api/v1/staff:
+    get:
+      tags: [Staff]
+      summary: List non-pet-parent clinic staff
+      responses:
+        "200":
+          description: Staff members
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonList"
 components:
   securitySchemes:
     cookieAuth:
       type: apiKey
       in: cookie
       name: pawit_access
+      description: HttpOnly Secure SameSite=Strict JWT cookie.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+        minLength: 1
+      description: Safe retry key for mutation requests.
+    PathID:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Resource identifier.
+    DevTenantID:
+      name: X-PawIt-Tenant-ID
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
+    DevUserID:
+      name: X-PawIt-User-ID
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
+    DevRole:
+      name: X-PawIt-Role
+      in: header
+      required: false
+      schema:
+        $ref: "#/components/schemas/Role"
+      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
+  requestBodies:
+    UpdateQueueBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateQueueRequest"
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Forbidden:
+      description: Role does not have required permission
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found in tenant scope
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Conflict:
+      description: State conflict or idempotency-key conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServiceUnavailable:
+      description: Service dependency unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    QueueMutationOK:
+      description: Queue entry updated
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/QueueMutationResult"
   schemas:
+    HealthResponse:
+      type: object
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          const: ok
+        service:
+          type: string
+          const: pawit-vetcare-api
+    ReadyResponse:
+      type: object
+      required: [status, checkedAt]
+      properties:
+        status:
+          type: string
+          const: ready
+        checkedAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+    MeResponse:
+      type: object
+      required: [user, clinic]
+      properties:
+        user:
+          type: object
+          required: [id, role, tenantId]
+          properties:
+            id:
+              type: string
+            role:
+              $ref: "#/components/schemas/Role"
+            tenantId:
+              type: string
+        clinic:
+          type: object
+          required: [name, type]
+          properties:
+            name:
+              type: string
+            type:
+              type: string
     ProductSpec:
       type: object
       required:
@@ -113,47 +780,11 @@ components:
           type: string
           const: email_password
         telemedicine:
-          type: object
-          required: [mode, builtInVideoRoomsEnabled]
-          properties:
-            mode:
-              type: string
-              const: manual_meeting_link
-            builtInVideoRoomsEnabled:
-              type: boolean
-              const: false
+          $ref: "#/components/schemas/TelemedicineSpec"
         labs:
-          type: object
-          required: [internalLabsEnabled, externalLabsEnabled, externalIntegrationMode, thirdPartyApiIntegrationInV1]
-          properties:
-            internalLabsEnabled:
-              type: boolean
-              const: true
-            externalLabsEnabled:
-              type: boolean
-              const: true
-            externalIntegrationMode:
-              type: string
-              const: manual_status_based
-            thirdPartyApiIntegrationInV1:
-              type: boolean
-              const: false
+          $ref: "#/components/schemas/LabSpec"
         cancellationPolicy:
-          type: object
-          required: [defaultCutoffHours, tenantConfigurable, locationOverride, staffOverrideAllowed]
-          properties:
-            defaultCutoffHours:
-              type: integer
-              const: 24
-            tenantConfigurable:
-              type: boolean
-              const: true
-            locationOverride:
-              type: boolean
-              const: true
-            staffOverrideAllowed:
-              type: boolean
-              const: true
+          $ref: "#/components/schemas/CancellationPolicy"
         recordDeletionPolicy:
           type: string
           const: archive_cancel_void_only
@@ -166,6 +797,56 @@ components:
         hipaaAligned:
           type: boolean
           const: true
+    TelemedicineSpec:
+      type: object
+      required: [mode, builtInVideoRoomsEnabled]
+      properties:
+        mode:
+          type: string
+          const: manual_meeting_link
+        builtInVideoRoomsEnabled:
+          type: boolean
+          const: false
+    LabSpec:
+      type: object
+      required: [internalLabsEnabled, externalLabsEnabled, externalIntegrationMode, thirdPartyApiIntegrationInV1]
+      properties:
+        internalLabsEnabled:
+          type: boolean
+          const: true
+        externalLabsEnabled:
+          type: boolean
+          const: true
+        externalIntegrationMode:
+          type: string
+          const: manual_status_based
+        thirdPartyApiIntegrationInV1:
+          type: boolean
+          const: false
+    CancellationPolicy:
+      type: object
+      required: [defaultCutoffHours, tenantConfigurable, locationOverride, staffOverrideAllowed]
+      properties:
+        defaultCutoffHours:
+          type: integer
+          const: 24
+        tenantConfigurable:
+          type: boolean
+          const: true
+        locationOverride:
+          type: boolean
+          const: true
+        staffOverrideAllowed:
+          type: boolean
+          const: true
+    RolePolicyList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/RolePolicy"
     RolePolicy:
       type: object
       required: [role, description, permissions]
@@ -182,6 +863,203 @@ components:
           type: array
           items:
             type: string
+    NavigationResponse:
+      type: object
+      required: [sections]
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/NavSection"
+    NavSection:
+      type: object
+      required: [label, items]
+      properties:
+        label:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NavItem"
+    NavItem:
+      type: object
+      required: [label, path, icon]
+      properties:
+        label:
+          type: string
+        path:
+          type: string
+        icon:
+          type: string
+    MetricList:
+      type: object
+      required: [metrics]
+      properties:
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+    Metric:
+      type: object
+      required: [label, value]
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+        delta:
+          type: string
+        tone:
+          type: string
+    AppointmentList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Appointment"
+    Appointment:
+      type: object
+      required: [id, petName, ownerName, primaryVeterinarian, additionalVeterinarians, time, type, status, contact, reason]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        primaryVeterinarian:
+          type: string
+        additionalVeterinarians:
+          type: array
+          items:
+            type: string
+        time:
+          type: string
+        type:
+          $ref: "#/components/schemas/AppointmentType"
+        status:
+          $ref: "#/components/schemas/AppointmentStatus"
+        contact:
+          type: string
+        meetingUrl:
+          type: string
+        reason:
+          type: string
+    CreateAppointmentRequest:
+      type: object
+      required: [locationId, petId, type, reason]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        type:
+          $ref: "#/components/schemas/AppointmentType"
+        reason:
+          type: string
+          minLength: 1
+        startsAt:
+          type: string
+          format: date-time
+        endsAt:
+          type: string
+          format: date-time
+        primaryVeterinarianId:
+          type: string
+        additionalVeterinarianIds:
+          type: array
+          items:
+            type: string
+        meetingUrl:
+          type: string
+        requestedByPetParent:
+          type: boolean
+    CancelAppointmentRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+        staffOverride:
+          type: boolean
+    AppointmentMutationResult:
+      type: object
+      required: [appointment]
+      properties:
+        appointment:
+          $ref: "#/components/schemas/Appointment"
+        idempotent:
+          type: boolean
+    CalendarResponse:
+      type: object
+      required: [date, statusCounts, items]
+      properties:
+        date:
+          type: string
+          format: date
+        statusCounts:
+          type: object
+          additionalProperties:
+            type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Appointment"
+    QueueEntryList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/QueueEntry"
+    QueueEntry:
+      type: object
+      required: [id, petName, ownerName, species, priority, status, waitMins]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        species:
+          $ref: "#/components/schemas/Species"
+        priority:
+          type: string
+        status:
+          $ref: "#/components/schemas/QueueStatus"
+        waitMins:
+          type: integer
+    RegisterWalkInRequest:
+      type: object
+      required: [locationId, petId, reason]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        priority:
+          type: string
+        reason:
+          type: string
+          minLength: 1
+    UpdateQueueRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+    QueueMutationResult:
+      type: object
+      required: [queueEntry]
+      properties:
+        queueEntry:
+          $ref: "#/components/schemas/QueueEntry"
+        idempotent:
+          type: boolean
     PetRecordList:
       type: object
       required: [items]
@@ -192,7 +1070,7 @@ components:
             $ref: "#/components/schemas/PetRecord"
     PetRecord:
       type: object
-      required: [id, petName, ownerName, species, guardianCount, documentsCount]
+      required: [id, petName, ownerName, species, breed, age, sex, phone, lastVisit, vaccinesDue, openPlans, guardianCount, documentsCount]
       properties:
         id:
           type: string
@@ -220,6 +1098,345 @@ components:
           type: integer
         documentsCount:
           type: integer
+    CreatePetRequest:
+      type: object
+      required: [locationId, name, species, guardianName]
+      properties:
+        locationId:
+          type: string
+        name:
+          type: string
+          minLength: 1
+        species:
+          $ref: "#/components/schemas/Species"
+        breed:
+          type: string
+        sex:
+          type: string
+        estimatedAge:
+          type: string
+        guardianName:
+          type: string
+          minLength: 1
+        guardianEmail:
+          type: string
+          format: email
+        relationship:
+          type: string
+        primaryGuardian:
+          type: boolean
+    ArchivePetRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+    PetMutationResult:
+      type: object
+      required: [pet]
+      properties:
+        pet:
+          $ref: "#/components/schemas/PetRecord"
+        idempotent:
+          type: boolean
+    UploadPetDocumentRequest:
+      type: object
+      required: [title, documentType, objectPath, contentType, sizeBytes]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        documentType:
+          type: string
+          minLength: 1
+        objectPath:
+          type: string
+          minLength: 1
+        contentType:
+          type: string
+          minLength: 1
+        sizeBytes:
+          type: integer
+          format: int64
+          minimum: 0
+    PetDocumentMutationResult:
+      type: object
+      required: [document]
+      properties:
+        document:
+          $ref: "#/components/schemas/PetDocument"
+        idempotent:
+          type: boolean
+    PetDocument:
+      type: object
+      required: [id, petId, title, documentType, objectPath, contentType, sizeBytes, status, createdAt]
+      properties:
+        id:
+          type: string
+        petId:
+          type: string
+        title:
+          type: string
+        documentType:
+          type: string
+        objectPath:
+          type: string
+        contentType:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [active, archived]
+        createdAt:
+          type: string
+          format: date-time
+    PrescriptionTemplateList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrescriptionTemplate"
+    PrescriptionTemplate:
+      type: object
+      required: [id, name, condition, category, medications, instructions]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        condition:
+          type: string
+        category:
+          type: string
+        medications:
+          type: array
+          items:
+            type: string
+        instructions:
+          type: string
+    ClinicalNoteList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClinicalNote"
+    ClinicalNote:
+      type: object
+      required: [id, petName, ownerName, subject, status, updatedAt, sharedWithPetParent]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        subject:
+          type: string
+        status:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        sharedWithPetParent:
+          type: boolean
+    LabTestList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabTest"
+    LabTest:
+      type: object
+      required: [id, petName, ownerName, testType, labCenter, labType, status, sharedWithPetParent]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        testType:
+          type: string
+        labCenter:
+          type: string
+        labType:
+          type: string
+        status:
+          $ref: "#/components/schemas/LabOrderStatus"
+        reportUrl:
+          type: string
+        sharedWithPetParent:
+          type: boolean
+    CreateLabOrderRequest:
+      type: object
+      required: [locationId, petId, testType]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        appointmentId:
+          type: string
+        labCenterId:
+          type: string
+        testType:
+          type: string
+          minLength: 1
+        sampleType:
+          type: string
+        priority:
+          type: string
+    UpdateLabOrderStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/LabOrderStatus"
+        reason:
+          type: string
+    UploadLabResultRequest:
+      type: object
+      properties:
+        resultNotes:
+          type: string
+        reportObjectPath:
+          type: string
+        shareWithPetParent:
+          type: boolean
+        completedAt:
+          type: string
+          format: date-time
+        markOrderCompleted:
+          type: boolean
+      anyOf:
+        - required: [resultNotes]
+        - required: [reportObjectPath]
+    LabOrderMutationResult:
+      type: object
+      required: [labTest]
+      properties:
+        labTest:
+          $ref: "#/components/schemas/LabTest"
+        idempotent:
+          type: boolean
+    BillingResponse:
+      type: object
+      required: [metrics, invoices]
+      properties:
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        invoices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Invoice"
+    Invoice:
+      type: object
+      required: [id, petName, ownerName, amount, status, dueDate]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        status:
+          type: string
+        dueDate:
+          type: string
+    Analytics:
+      type: object
+      required: [metrics, speciesDistribution, appointmentStatus, revenueTrend, commonDiagnoses]
+      properties:
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        speciesDistribution:
+          type: object
+          additionalProperties:
+            type: integer
+        appointmentStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        revenueTrend:
+          type: object
+          additionalProperties:
+            type: string
+        commonDiagnoses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+    FeedbackResponse:
+      type: object
+      required: [metrics, distribution, items]
+      properties:
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        distribution:
+          type: object
+          additionalProperties:
+            type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Feedback"
+    Feedback:
+      type: object
+      required: [id, petName, ownerName, rating, comment, createdAt]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        createdAt:
+          type: string
+    PersonList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+    Person:
+      type: object
+      required: [id, name, role, email, status]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        specialty:
+          type: string
+        email:
+          type: string
+        status:
+          type: string
     Role:
       type: string
       enum:
@@ -257,6 +1474,14 @@ components:
         - no_show
         - needs_reschedule
         - rejected
+    QueueStatus:
+      type: string
+      enum:
+        - waiting
+        - called
+        - in_progress
+        - completed
+        - cancelled
     LabOrderStatus:
       type: string
       enum:
