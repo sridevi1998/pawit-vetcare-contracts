@@ -6,7 +6,7 @@ Shared API contracts for the PawIt backend and frontend apps. Start with OpenAPI
 
 - Canonical contract: [openapi/pawit.v1.yaml](openapi/pawit.v1.yaml)
 - Current version: `0.3.0`
-- Covered backend surface: health/readiness, current user, product policy, roles, navigation, dashboard, appointments, queue, pets, pet documents, clinical reads, billing, analytics, feedback, doctors, and staff.
+- Covered backend surface: health/readiness, current user, product policy, roles, navigation, dashboard, appointments, queue, pets, pet documents, clinical reads, billing reads and invoice mutations, analytics, feedback, doctors, and staff.
 
 ## Frontend Wiring
 

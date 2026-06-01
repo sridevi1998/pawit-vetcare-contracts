@@ -63,6 +63,8 @@ All mutation calls should send an `Idempotency-Key` header so retries are safe:
 - `POST /api/v1/lab-tests`
 - `POST /api/v1/lab-tests/{id}/status`
 - `POST /api/v1/lab-tests/{id}/report`
+- `POST /api/v1/billing/invoices`
+- `POST /api/v1/billing/invoices/{id}/void`
 
 ## Naming
 
