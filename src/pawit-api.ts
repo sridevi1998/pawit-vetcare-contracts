@@ -1131,6 +1131,102 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a draft or issued invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Safe retry key for mutation requests. */
+                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateInvoiceRequest"];
+                };
+            };
+            responses: {
+                /** @description Invoice created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InvoiceMutationResult"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                409: components["responses"]["Conflict"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/invoices/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Void an invoice */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    /** @description Safe retry key for mutation requests. */
+                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+                };
+                path: {
+                    /** @description Resource identifier. */
+                    id: components["parameters"]["PathID"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VoidInvoiceRequest"];
+                };
+            };
+            responses: {
+                /** @description Invoice voided */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["InvoiceMutationResult"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                403: components["responses"]["Forbidden"];
+                404: components["responses"]["NotFound"];
+                409: components["responses"]["Conflict"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analytics": {
         parameters: {
             query?: never;
@@ -1601,6 +1697,43 @@ export interface components {
             amount: number;
             status: string;
             dueDate: string;
+        };
+        InvoiceLineItemInput: {
+            description: string;
+            quantity: number;
+            /** Format: int64 */
+            unitAmountCents: number;
+            relatedResourceType?: string;
+            relatedResourceId?: string;
+        };
+        CreateInvoiceRequest: {
+            locationId: string;
+            petId?: string;
+            /**
+             * @default issued
+             * @enum {string}
+             */
+            status: "draft" | "issued";
+            /** Format: date-time */
+            dueAt?: string;
+            /**
+             * Format: int64
+             * @default 0
+             */
+            taxCents: number;
+            /**
+             * Format: int64
+             * @default 0
+             */
+            discountCents: number;
+            lineItems: components["schemas"]["InvoiceLineItemInput"][];
+        };
+        VoidInvoiceRequest: {
+            reason: string;
+        };
+        InvoiceMutationResult: {
+            invoice: components["schemas"]["Invoice"];
+            idempotent?: boolean;
         };
         Analytics: {
             metrics: components["schemas"]["Metric"][];

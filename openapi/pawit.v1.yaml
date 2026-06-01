@@ -531,6 +531,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingResponse"
+  /api/v1/billing/invoices:
+    post:
+      tags: [Billing]
+      summary: Create a draft or issued invoice
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvoiceRequest"
+      responses:
+        "201":
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/billing/invoices/{id}/void:
+    post:
+      tags: [Billing]
+      summary: Void an invoice
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VoidInvoiceRequest"
+      responses:
+        "200":
+          description: Invoice voided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /api/v1/analytics:
     get:
       tags: [Analytics]
@@ -1357,6 +1410,69 @@ components:
           type: string
         dueDate:
           type: string
+    InvoiceLineItemInput:
+      type: object
+      required: [description, quantity, unitAmountCents]
+      properties:
+        description:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+          minimum: 1
+        unitAmountCents:
+          type: integer
+          format: int64
+          minimum: 0
+        relatedResourceType:
+          type: string
+        relatedResourceId:
+          type: string
+    CreateInvoiceRequest:
+      type: object
+      required: [locationId, lineItems]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        status:
+          type: string
+          enum: [draft, issued]
+          default: issued
+        dueAt:
+          type: string
+          format: date-time
+        taxCents:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+        discountCents:
+          type: integer
+          format: int64
+          minimum: 0
+          default: 0
+        lineItems:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/InvoiceLineItemInput"
+    VoidInvoiceRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
+    InvoiceMutationResult:
+      type: object
+      required: [invoice]
+      properties:
+        invoice:
+          $ref: "#/components/schemas/Invoice"
+        idempotent:
+          type: boolean
     Analytics:
       type: object
       required: [metrics, speciesDistribution, appointmentStatus, revenueTrend, commonDiagnoses]
