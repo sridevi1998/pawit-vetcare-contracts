@@ -2,6 +2,9 @@ openapi: 3.1.0
 info:
   title: PawIt VetCare API
   version: 0.3.0
+  license:
+    name: Proprietary
+    url: https://pawit.care/legal/terms
   summary: Contract for the PawIt VetCare multi-tenant veterinary HMS API.
   description: >
     PawIt VetCare is a serverless, multi-tenant veterinary hospital management
@@ -9,27 +12,39 @@ info:
     frontend API clients, and contract tests.
 servers:
   - url: https://api.pawit.care
-    description: Production placeholder
-  - url: http://localhost:8080
-    description: Local development
+    description: Production API
+  - url: https://api.dev.pawit.care
+    description: Development API
 security:
   - cookieAuth: []
   - bearerAuth: []
 tags:
   - name: System
+    description: Health, readiness, and platform-level endpoints.
   - name: Current User
+    description: Authenticated user, tenant, and clinic context.
   - name: Product Policy
+    description: PawIt product settings, role policies, and supported workflows.
   - name: Dashboard
+    description: Hospital portal navigation and operational summary data.
   - name: Appointments
+    description: Appointment scheduling, cancellation, calendar, and visit status.
   - name: Queue
+    description: Walk-in registration and patient queue state transitions.
   - name: Pets
+    description: Dog and cat records, guardians, and document metadata.
   - name: Clinical
+    description: Prescriptions, SOAP notes, lab orders, and diagnostic reports.
   - name: Billing
+    description: Billing dashboards, invoices, and invoice voiding.
   - name: Analytics
+    description: Tenant analytics, feedback, ratings, and reporting data.
   - name: Staff
+    description: Veterinarian and clinic staff management.
 paths:
   /healthz:
     get:
+      operationId: getHealth
       tags: [System]
       summary: Public liveness check
       security: []
@@ -40,8 +55,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /readyz:
     get:
+      operationId: getReadiness
       tags: [System]
       summary: Public readiness check
       security: []
@@ -54,8 +72,11 @@ paths:
                 $ref: "#/components/schemas/ReadyResponse"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/v1/me:
     get:
+      operationId: getCurrentUser
       tags: [Current User]
       summary: Get current user and tenant context
       responses:
@@ -69,6 +90,7 @@ paths:
           $ref: "#/components/responses/Unauthorized"
   /api/v1/product-spec:
     get:
+      operationId: getProductSpec
       tags: [Product Policy]
       summary: Get approved PawIt v1 product policy
       responses:
@@ -78,8 +100,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductSpec"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/role-policies:
     get:
+      operationId: listRolePolicies
       tags: [Product Policy]
       summary: List PawIt role and permission policies
       responses:
@@ -89,8 +114,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RolePolicyList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/navigation:
     get:
+      operationId: getNavigation
       tags: [Dashboard]
       summary: Get hospital portal navigation sections
       responses:
@@ -100,8 +128,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/NavigationResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/dashboard/summary:
     get:
+      operationId: getDashboardSummary
       tags: [Dashboard]
       summary: Get top-level operational metrics
       responses:
@@ -111,8 +142,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MetricList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/appointments:
     get:
+      operationId: listAppointments
       tags: [Appointments]
       summary: List appointments
       responses:
@@ -122,7 +156,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AppointmentList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
+      operationId: createAppointment
       tags: [Appointments]
       summary: Create a staff-managed appointment or pet-parent appointment request
       description: >
@@ -152,6 +189,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/appointments/{id}/cancel:
     post:
+      operationId: cancelAppointment
       tags: [Appointments]
       summary: Cancel an appointment with clinic cutoff enforcement
       parameters:
@@ -180,6 +218,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/calendar:
     get:
+      operationId: getCalendar
       tags: [Appointments]
       summary: Get appointment calendar data
       responses:
@@ -189,8 +228,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CalendarResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/queue:
     get:
+      operationId: listQueueEntries
       tags: [Queue]
       summary: List active queue entries
       responses:
@@ -200,8 +242,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QueueEntryList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/queue/walk-ins:
     post:
+      operationId: registerWalkIn
       tags: [Queue]
       summary: Register a walk-in queue entry and linked appointment
       parameters:
@@ -227,6 +272,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/queue/{id}/call:
     post:
+      operationId: callQueueEntry
       tags: [Queue]
       summary: Mark a queue entry as called
       parameters:
@@ -245,6 +291,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/queue/{id}/start:
     post:
+      operationId: startQueueEntry
       tags: [Queue]
       summary: Move a queue entry into consultation
       parameters:
@@ -263,6 +310,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/queue/{id}/complete:
     post:
+      operationId: completeQueueEntry
       tags: [Queue]
       summary: Complete a queue entry and linked appointment
       parameters:
@@ -281,6 +329,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/queue/{id}/cancel:
     post:
+      operationId: cancelQueueEntry
       tags: [Queue]
       summary: Cancel a queue entry and linked appointment
       parameters:
@@ -299,6 +348,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/pets:
     get:
+      operationId: listPets
       tags: [Pets]
       summary: List dog/cat pet records
       responses:
@@ -308,7 +358,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PetRecordList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
+      operationId: createPet
       tags: [Pets]
       summary: Create a dog/cat pet record with first guardian
       parameters:
@@ -334,6 +387,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/pets/{id}/archive:
     post:
+      operationId: archivePet
       tags: [Pets]
       summary: Archive a pet record with audit reason
       description: PawIt never hard-deletes clinical records from the application API.
@@ -363,6 +417,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/pets/{id}/documents:
     post:
+      operationId: uploadPetDocument
       tags: [Pets]
       summary: Register uploaded pet document metadata
       description: >
@@ -394,6 +449,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/patients:
     get:
+      operationId: listPatients
       tags: [Pets]
       summary: List pet records
       description: Legacy alias for `/pets` while the hospital UI migrates to veterinary naming.
@@ -404,8 +460,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PetRecordList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/prescription-templates:
     get:
+      operationId: listPrescriptionTemplates
       tags: [Clinical]
       summary: List veterinary prescription templates
       responses:
@@ -415,8 +474,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PrescriptionTemplateList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/clinical-notes:
     get:
+      operationId: listClinicalNotes
       tags: [Clinical]
       summary: List clinical notes and consultations
       responses:
@@ -426,8 +488,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClinicalNoteList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/lab-tests:
     get:
+      operationId: listLabTests
       tags: [Clinical]
       summary: List lab tests and diagnostic reports
       responses:
@@ -437,7 +502,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LabTestList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     post:
+      operationId: createLabOrder
       tags: [Clinical]
       summary: Create an internal or external lab order
       parameters:
@@ -463,6 +531,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/lab-tests/{id}/status:
     post:
+      operationId: updateLabOrderStatus
       tags: [Clinical]
       summary: Process a lab order through workflow statuses
       parameters:
@@ -491,6 +560,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/lab-tests/{id}/report:
     post:
+      operationId: uploadLabResult
       tags: [Clinical]
       summary: Upload lab result metadata and optionally share it
       description: >
@@ -522,6 +592,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/billing:
     get:
+      operationId: getBilling
       tags: [Billing]
       summary: Get billing metrics and invoices
       responses:
@@ -531,8 +602,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/billing/invoices:
     post:
+      operationId: createInvoice
       tags: [Billing]
       summary: Create a draft or issued invoice
       parameters:
@@ -558,6 +632,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/billing/invoices/{id}/void:
     post:
+      operationId: voidInvoice
       tags: [Billing]
       summary: Void an invoice
       parameters:
@@ -586,6 +661,7 @@ paths:
           $ref: "#/components/responses/Conflict"
   /api/v1/analytics:
     get:
+      operationId: getAnalytics
       tags: [Analytics]
       summary: Get tenant analytics
       responses:
@@ -595,8 +671,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Analytics"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/feedback:
     get:
+      operationId: getFeedback
       tags: [Analytics]
       summary: Get feedback metrics and reviews
       responses:
@@ -606,8 +685,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FeedbackResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/doctors:
     get:
+      operationId: listDoctors
       tags: [Staff]
       summary: List veterinarians
       responses:
@@ -617,8 +699,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /api/v1/staff:
     get:
+      operationId: listStaff
       tags: [Staff]
       summary: List non-pet-parent clinic staff
       responses:
@@ -628,6 +713,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 components:
   securitySchemes:
     cookieAuth:
@@ -655,27 +742,6 @@ components:
       schema:
         type: string
       description: Resource identifier.
-    DevTenantID:
-      name: X-PawIt-Tenant-ID
-      in: header
-      required: false
-      schema:
-        type: string
-      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
-    DevUserID:
-      name: X-PawIt-User-ID
-      in: header
-      required: false
-      schema:
-        type: string
-      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
-    DevRole:
-      name: X-PawIt-Role
-      in: header
-      required: false
-      schema:
-        $ref: "#/components/schemas/Role"
-      description: Local development only when PAWIT_ALLOW_DEV_AUTH=true.
   requestBodies:
     UpdateQueueBody:
       required: true
