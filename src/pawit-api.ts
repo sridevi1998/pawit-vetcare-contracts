@@ -12,26 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /** Public liveness check */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Service is alive */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["HealthResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getHealth"];
         put?: never;
         post?: never;
         delete?: never;
@@ -48,27 +29,7 @@ export interface paths {
             cookie?: never;
         };
         /** Public readiness check */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Service dependencies are ready */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ReadyResponse"];
-                    };
-                };
-                503: components["responses"]["ServiceUnavailable"];
-            };
-        };
+        get: operations["getReadiness"];
         put?: never;
         post?: never;
         delete?: never;
@@ -85,27 +46,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get current user and tenant context */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Current user context */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MeResponse"];
-                    };
-                };
-                401: components["responses"]["Unauthorized"];
-            };
-        };
+        get: operations["getCurrentUser"];
         put?: never;
         post?: never;
         delete?: never;
@@ -122,26 +63,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get approved PawIt v1 product policy */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Product policy */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ProductSpec"];
-                    };
-                };
-            };
-        };
+        get: operations["getProductSpec"];
         put?: never;
         post?: never;
         delete?: never;
@@ -158,26 +80,7 @@ export interface paths {
             cookie?: never;
         };
         /** List PawIt role and permission policies */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Role policies */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["RolePolicyList"];
-                    };
-                };
-            };
-        };
+        get: operations["listRolePolicies"];
         put?: never;
         post?: never;
         delete?: never;
@@ -194,26 +97,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get hospital portal navigation sections */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Navigation sections */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["NavigationResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getNavigation"];
         put?: never;
         post?: never;
         delete?: never;
@@ -230,26 +114,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get top-level operational metrics */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Dashboard metrics */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["MetricList"];
-                    };
-                };
-            };
-        };
+        get: operations["getDashboardSummary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -266,61 +131,13 @@ export interface paths {
             cookie?: never;
         };
         /** List appointments */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Appointment list */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AppointmentList"];
-                    };
-                };
-            };
-        };
+        get: operations["listAppointments"];
         put?: never;
         /**
          * Create a staff-managed appointment or pet-parent appointment request
          * @description Pet parents create requested appointments. Staff users with appointment management permission can create scheduled appointments. Telemedicine appointments use manually entered meeting links in v1.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateAppointmentRequest"];
-                };
-            };
-            responses: {
-                /** @description Appointment created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AppointmentMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["createAppointment"];
         delete?: never;
         options?: never;
         head?: never;
@@ -337,40 +154,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Cancel an appointment with clinic cutoff enforcement */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CancelAppointmentRequest"];
-                };
-            };
-            responses: {
-                /** @description Appointment cancelled */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["AppointmentMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["cancelAppointment"];
         delete?: never;
         options?: never;
         head?: never;
@@ -385,26 +169,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get appointment calendar data */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Calendar data */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["CalendarResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getCalendar"];
         put?: never;
         post?: never;
         delete?: never;
@@ -421,26 +186,7 @@ export interface paths {
             cookie?: never;
         };
         /** List active queue entries */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Queue entries */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["QueueEntryList"];
-                    };
-                };
-            };
-        };
+        get: operations["listQueueEntries"];
         put?: never;
         post?: never;
         delete?: never;
@@ -459,36 +205,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Register a walk-in queue entry and linked appointment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RegisterWalkInRequest"];
-                };
-            };
-            responses: {
-                /** @description Walk-in registered */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["QueueMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["registerWalkIn"];
         delete?: never;
         options?: never;
         head?: never;
@@ -505,27 +222,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Mark a queue entry as called */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: components["requestBodies"]["UpdateQueueBody"];
-            responses: {
-                200: components["responses"]["QueueMutationOK"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["callQueueEntry"];
         delete?: never;
         options?: never;
         head?: never;
@@ -542,27 +239,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Move a queue entry into consultation */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: components["requestBodies"]["UpdateQueueBody"];
-            responses: {
-                200: components["responses"]["QueueMutationOK"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["startQueueEntry"];
         delete?: never;
         options?: never;
         head?: never;
@@ -579,27 +256,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Complete a queue entry and linked appointment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: components["requestBodies"]["UpdateQueueBody"];
-            responses: {
-                200: components["responses"]["QueueMutationOK"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["completeQueueEntry"];
         delete?: never;
         options?: never;
         head?: never;
@@ -616,27 +273,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Cancel a queue entry and linked appointment */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: components["requestBodies"]["UpdateQueueBody"];
-            responses: {
-                200: components["responses"]["QueueMutationOK"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["cancelQueueEntry"];
         delete?: never;
         options?: never;
         head?: never;
@@ -651,58 +288,10 @@ export interface paths {
             cookie?: never;
         };
         /** List dog/cat pet records */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Pet records */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PetRecordList"];
-                    };
-                };
-            };
-        };
+        get: operations["listPets"];
         put?: never;
         /** Create a dog/cat pet record with first guardian */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreatePetRequest"];
-                };
-            };
-            responses: {
-                /** @description Pet created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PetMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["createPet"];
         delete?: never;
         options?: never;
         head?: never;
@@ -722,40 +311,7 @@ export interface paths {
          * Archive a pet record with audit reason
          * @description PawIt never hard-deletes clinical records from the application API.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ArchivePetRequest"];
-                };
-            };
-            responses: {
-                /** @description Pet archived */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PetMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["archivePet"];
         delete?: never;
         options?: never;
         head?: never;
@@ -775,40 +331,7 @@ export interface paths {
          * Register uploaded pet document metadata
          * @description The file itself is stored through a signed upload flow. This endpoint records the document metadata once storage has accepted the object.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UploadPetDocumentRequest"];
-                };
-            };
-            responses: {
-                /** @description Document metadata registered */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PetDocumentMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["uploadPetDocument"];
         delete?: never;
         options?: never;
         head?: never;
@@ -826,26 +349,7 @@ export interface paths {
          * List pet records
          * @description Legacy alias for `/pets` while the hospital UI migrates to veterinary naming.
          */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Pet records */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PetRecordList"];
-                    };
-                };
-            };
-        };
+        get: operations["listPatients"];
         put?: never;
         post?: never;
         delete?: never;
@@ -862,26 +366,7 @@ export interface paths {
             cookie?: never;
         };
         /** List veterinary prescription templates */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Prescription templates */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PrescriptionTemplateList"];
-                    };
-                };
-            };
-        };
+        get: operations["listPrescriptionTemplates"];
         put?: never;
         post?: never;
         delete?: never;
@@ -898,26 +383,7 @@ export interface paths {
             cookie?: never;
         };
         /** List clinical notes and consultations */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Clinical notes */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ClinicalNoteList"];
-                    };
-                };
-            };
-        };
+        get: operations["listClinicalNotes"];
         put?: never;
         post?: never;
         delete?: never;
@@ -934,58 +400,10 @@ export interface paths {
             cookie?: never;
         };
         /** List lab tests and diagnostic reports */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Lab tests */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LabTestList"];
-                    };
-                };
-            };
-        };
+        get: operations["listLabTests"];
         put?: never;
         /** Create an internal or external lab order */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateLabOrderRequest"];
-                };
-            };
-            responses: {
-                /** @description Lab order created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LabOrderMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["createLabOrder"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1002,40 +420,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Process a lab order through workflow statuses */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateLabOrderStatusRequest"];
-                };
-            };
-            responses: {
-                /** @description Lab order status updated */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LabOrderMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["updateLabOrderStatus"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1055,40 +440,7 @@ export interface paths {
          * Upload lab result metadata and optionally share it
          * @description Lab technicians may upload/process results. Sharing a result with pet parents requires `lab_result.share`.
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UploadLabResultRequest"];
-                };
-            };
-            responses: {
-                /** @description Lab result uploaded */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["LabOrderMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["uploadLabResult"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1103,26 +455,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get billing metrics and invoices */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Billing dashboard */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["BillingResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getBilling"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1141,36 +474,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create a draft or issued invoice */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateInvoiceRequest"];
-                };
-            };
-            responses: {
-                /** @description Invoice created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["InvoiceMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["createInvoice"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1187,40 +491,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Void an invoice */
-        post: {
-            parameters: {
-                query?: never;
-                header?: {
-                    /** @description Safe retry key for mutation requests. */
-                    "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-                };
-                path: {
-                    /** @description Resource identifier. */
-                    id: components["parameters"]["PathID"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["VoidInvoiceRequest"];
-                };
-            };
-            responses: {
-                /** @description Invoice voided */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["InvoiceMutationResult"];
-                    };
-                };
-                400: components["responses"]["BadRequest"];
-                403: components["responses"]["Forbidden"];
-                404: components["responses"]["NotFound"];
-                409: components["responses"]["Conflict"];
-            };
-        };
+        post: operations["voidInvoice"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1235,26 +506,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get tenant analytics */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Analytics */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["Analytics"];
-                    };
-                };
-            };
-        };
+        get: operations["getAnalytics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1271,26 +523,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get feedback metrics and reviews */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Feedback dashboard */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["FeedbackResponse"];
-                    };
-                };
-            };
-        };
+        get: operations["getFeedback"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1307,26 +540,7 @@ export interface paths {
             cookie?: never;
         };
         /** List veterinarians */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Veterinarians */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PersonList"];
-                    };
-                };
-            };
-        };
+        get: operations["listDoctors"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1343,26 +557,7 @@ export interface paths {
             cookie?: never;
         };
         /** List non-pet-parent clinic staff */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Staff members */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["PersonList"];
-                    };
-                };
-            };
-        };
+        get: operations["listStaff"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1857,12 +1052,6 @@ export interface components {
         IdempotencyKey: string;
         /** @description Resource identifier. */
         PathID: string;
-        /** @description Local development only when PAWIT_ALLOW_DEV_AUTH=true. */
-        DevTenantID: string;
-        /** @description Local development only when PAWIT_ALLOW_DEV_AUTH=true. */
-        DevUserID: string;
-        /** @description Local development only when PAWIT_ALLOW_DEV_AUTH=true. */
-        DevRole: components["schemas"]["Role"];
     };
     requestBodies: {
         UpdateQueueBody: {
@@ -1875,4 +1064,864 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    getHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Service is alive */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+        };
+    };
+    getReadiness: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Service dependencies are ready */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadyResponse"];
+                };
+            };
+            404: components["responses"]["NotFound"];
+            503: components["responses"]["ServiceUnavailable"];
+        };
+    };
+    getCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current user context */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getProductSpec: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product policy */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductSpec"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listRolePolicies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Role policies */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RolePolicyList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getNavigation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Navigation sections */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NavigationResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getDashboardSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dashboard metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listAppointments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Appointment list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createAppointment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAppointmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Appointment created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    cancelAppointment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelAppointmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Appointment cancelled */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    getCalendar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Calendar data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listQueueEntries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Queue entries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueEntryList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    registerWalkIn: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterWalkInRequest"];
+            };
+        };
+        responses: {
+            /** @description Walk-in registered */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueueMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    callQueueEntry: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["UpdateQueueBody"];
+        responses: {
+            200: components["responses"]["QueueMutationOK"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    startQueueEntry: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["UpdateQueueBody"];
+        responses: {
+            200: components["responses"]["QueueMutationOK"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    completeQueueEntry: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["UpdateQueueBody"];
+        responses: {
+            200: components["responses"]["QueueMutationOK"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    cancelQueueEntry: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: components["requestBodies"]["UpdateQueueBody"];
+        responses: {
+            200: components["responses"]["QueueMutationOK"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    listPets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pet records */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetRecordList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createPet: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePetRequest"];
+            };
+        };
+        responses: {
+            /** @description Pet created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    archivePet: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArchivePetRequest"];
+            };
+        };
+        responses: {
+            /** @description Pet archived */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    uploadPetDocument: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadPetDocumentRequest"];
+            };
+        };
+        responses: {
+            /** @description Document metadata registered */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetDocumentMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    listPatients: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pet records */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PetRecordList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listPrescriptionTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prescription templates */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrescriptionTemplateList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listClinicalNotes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Clinical notes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicalNoteList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listLabTests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lab tests */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LabTestList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createLabOrder: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateLabOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description Lab order created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LabOrderMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    updateLabOrderStatus: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateLabOrderStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description Lab order status updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LabOrderMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    uploadLabResult: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadLabResultRequest"];
+            };
+        };
+        responses: {
+            /** @description Lab result uploaded */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LabOrderMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    getBilling: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Billing dashboard */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    createInvoice: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvoiceRequest"];
+            };
+        };
+        responses: {
+            /** @description Invoice created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    voidInvoice: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoidInvoiceRequest"];
+            };
+        };
+        responses: {
+            /** @description Invoice voided */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
+            409: components["responses"]["Conflict"];
+        };
+    };
+    getAnalytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Analytics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Analytics"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    getFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Feedback dashboard */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackResponse"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listDoctors: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Veterinarians */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+    listStaff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Staff members */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+        };
+    };
+}
