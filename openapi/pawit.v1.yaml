@@ -41,6 +41,8 @@ tags:
     description: Tenant analytics, feedback, ratings, and reporting data.
   - name: Staff
     description: Veterinarian and clinic staff management.
+  - name: Admin
+    description: Tenant administrative controls, audit review, and governance.
 paths:
   /healthz:
     get:
@@ -903,6 +905,23 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "409":
           $ref: "#/components/responses/Conflict"
+  /api/v1/audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [Admin]
+      summary: List tenant audit log entries
+      description: Clinic admins and internal super admins can review recent immutable audit entries for the tenant.
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 components:
   securitySchemes:
     cookieAuth:
@@ -1936,6 +1955,35 @@ components:
           $ref: "#/components/schemas/Person"
         idempotent:
           type: boolean
+    AuditLogList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogEntry"
+    AuditLogEntry:
+      type: object
+      required: [id, action, resourceType, createdAt]
+      properties:
+        id:
+          type: string
+        actorUserId:
+          type: string
+        actorRole:
+          type: string
+        action:
+          type: string
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+        reason:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
     Role:
       type: string
       enum:

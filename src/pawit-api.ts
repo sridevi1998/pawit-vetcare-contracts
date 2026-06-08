@@ -632,6 +632,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/audit-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List tenant audit log entries
+         * @description Clinic admins and internal super admins can review recent immutable audit entries for the tenant.
+         */
+        get: operations["listAuditLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1091,6 +1111,20 @@ export interface components {
         StaffMutationResult: {
             staffMember: components["schemas"]["Person"];
             idempotent?: boolean;
+        };
+        AuditLogList: {
+            items: components["schemas"]["AuditLogEntry"][];
+        };
+        AuditLogEntry: {
+            id: string;
+            actorUserId?: string;
+            actorRole?: string;
+            action: string;
+            resourceType: string;
+            resourceId?: string;
+            reason?: string;
+            /** Format: date-time */
+            createdAt: string;
         };
         /** @enum {string} */
         Role: "SuperAdmin" | "ClinicAdmin" | "Veterinarian" | "Receptionist" | "VetTechnician" | "LabTechnician" | "PetParent";
@@ -2245,6 +2279,28 @@ export interface operations {
             401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
             409: components["responses"]["Conflict"];
+        };
+    };
+    listAuditLogs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Audit log entries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditLogList"];
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
         };
     };
 }
