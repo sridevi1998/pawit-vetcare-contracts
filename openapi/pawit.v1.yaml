@@ -183,6 +183,8 @@ paths:
                 $ref: "#/components/schemas/AppointmentMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "409":
@@ -210,6 +212,8 @@ paths:
                 $ref: "#/components/schemas/AppointmentMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -266,6 +270,8 @@ paths:
                 $ref: "#/components/schemas/QueueMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "409":
@@ -283,6 +289,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/QueueMutationOK"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -302,6 +310,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/QueueMutationOK"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -321,6 +331,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/QueueMutationOK"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -340,6 +352,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/QueueMutationOK"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -381,6 +395,8 @@ paths:
                 $ref: "#/components/schemas/PetMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "409":
@@ -409,6 +425,8 @@ paths:
                 $ref: "#/components/schemas/PetMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -416,6 +434,27 @@ paths:
         "409":
           $ref: "#/components/responses/Conflict"
   /api/v1/pets/{id}/documents:
+    get:
+      operationId: listPetDocuments
+      tags: [Pets]
+      summary: List active document metadata for a pet
+      parameters:
+        - $ref: "#/components/parameters/PathID"
+      responses:
+        "200":
+          description: Pet document metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetDocumentList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     post:
       operationId: uploadPetDocument
       tags: [Pets]
@@ -441,6 +480,41 @@ paths:
                 $ref: "#/components/schemas/PetDocumentMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/pets/{id}/documents/{documentId}/archive:
+    post:
+      operationId: archivePetDocument
+      tags: [Pets]
+      summary: Archive pet document metadata with an audit reason
+      description: Document objects stay in storage; this marks metadata inactive in tenant scope.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+        - $ref: "#/components/parameters/DocumentID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArchivePetDocumentRequest"
+      responses:
+        "200":
+          description: Document metadata archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetDocumentMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -462,6 +536,82 @@ paths:
                 $ref: "#/components/schemas/PetRecordList"
         "401":
           $ref: "#/components/responses/Unauthorized"
+  /api/v1/prescriptions:
+    get:
+      operationId: listPrescriptions
+      tags: [Clinical]
+      summary: List tenant prescriptions
+      responses:
+        "200":
+          description: Prescription drafts and finalized prescriptions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      operationId: createPrescription
+      tags: [Clinical]
+      summary: Create a prescription draft with medication lines
+      description: Veterinarians and vet technicians can create drafts; finalization is a separate veterinarian-only step.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrescriptionRequest"
+      responses:
+        "201":
+          description: Prescription draft created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /api/v1/prescriptions/{id}/finalize:
+    post:
+      operationId: finalizePrescription
+      tags: [Clinical]
+      summary: Finalize a prescription draft
+      description: Finalized prescriptions may optionally be shared with the pet parent.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinalizePrescriptionRequest"
+      responses:
+        "200":
+          description: Prescription finalized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
   /api/v1/prescription-templates:
     get:
       operationId: listPrescriptionTemplates
@@ -525,6 +675,8 @@ paths:
                 $ref: "#/components/schemas/LabOrderMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "409":
@@ -552,6 +704,8 @@ paths:
                 $ref: "#/components/schemas/LabOrderMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -584,6 +738,8 @@ paths:
                 $ref: "#/components/schemas/LabOrderMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -626,6 +782,8 @@ paths:
                 $ref: "#/components/schemas/InvoiceMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "409":
@@ -653,6 +811,8 @@ paths:
                 $ref: "#/components/schemas/InvoiceMutationResult"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
         "404":
@@ -715,6 +875,34 @@ paths:
                 $ref: "#/components/schemas/PersonList"
         "401":
           $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createStaff
+      tags: [Staff]
+      summary: Invite or reactivate a tenant staff member
+      description: Clinic admins can create a pending staff invite or reactivate an existing staff account.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStaffRequest"
+      responses:
+        "201":
+          description: Staff member invited or reactivated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
 components:
   securitySchemes:
     cookieAuth:
@@ -742,6 +930,13 @@ components:
       schema:
         type: string
       description: Resource identifier.
+    DocumentID:
+      name: documentId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Pet document identifier.
   requestBodies:
     UpdateQueueBody:
       required: true
@@ -1251,6 +1446,13 @@ components:
         reason:
           type: string
           minLength: 1
+    ArchivePetDocumentRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
+          minLength: 1
     PetMutationResult:
       type: object
       required: [pet]
@@ -1279,6 +1481,14 @@ components:
           type: integer
           format: int64
           minimum: 0
+    PetDocumentList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PetDocument"
     PetDocumentMutationResult:
       type: object
       required: [document]
@@ -1312,6 +1522,91 @@ components:
         createdAt:
           type: string
           format: date-time
+    PrescriptionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Prescription"
+    Prescription:
+      type: object
+      required: [id, petName, ownerName, status, medicationNames, sharedWithPetParent, updatedAt]
+      properties:
+        id:
+          type: string
+        petName:
+          type: string
+        ownerName:
+          type: string
+        status:
+          type: string
+          enum: [draft, finalized]
+        medicationNames:
+          type: array
+          items:
+            type: string
+        instructions:
+          type: string
+        sharedWithPetParent:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+    PrescriptionMedicationInput:
+      type: object
+      required: [medicationName]
+      properties:
+        medicationName:
+          type: string
+          minLength: 1
+        strength:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        duration:
+          type: string
+        route:
+          type: string
+        instructions:
+          type: string
+    CreatePrescriptionRequest:
+      type: object
+      required: [locationId, petId, medications]
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        appointmentId:
+          type: string
+        prescribingVeterinarianId:
+          type: string
+        instructions:
+          type: string
+        sharedWithPetParent:
+          type: boolean
+        medications:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/PrescriptionMedicationInput"
+    FinalizePrescriptionRequest:
+      type: object
+      properties:
+        shareWithPetParent:
+          type: boolean
+    PrescriptionMutationResult:
+      type: object
+      required: [prescription]
+      properties:
+        prescription:
+          $ref: "#/components/schemas/Prescription"
+        idempotent:
+          type: boolean
     PrescriptionTemplateList:
       type: object
       required: [items]
@@ -1619,6 +1914,28 @@ components:
           type: string
         status:
           type: string
+    CreateStaffRequest:
+      type: object
+      required: [name, email, role]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/Role"
+        defaultLocationId:
+          type: string
+    StaffMutationResult:
+      type: object
+      required: [staffMember]
+      properties:
+        staffMember:
+          $ref: "#/components/schemas/Person"
+        idempotent:
+          type: boolean
     Role:
       type: string
       enum:
