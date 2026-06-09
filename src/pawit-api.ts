@@ -1143,6 +1143,8 @@ export interface components {
         /** @description Invalid request */
         BadRequest: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1152,6 +1154,8 @@ export interface components {
         /** @description Authentication required */
         Unauthorized: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1161,6 +1165,8 @@ export interface components {
         /** @description Role does not have required permission */
         Forbidden: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1170,6 +1176,8 @@ export interface components {
         /** @description Resource not found in tenant scope */
         NotFound: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1179,6 +1187,8 @@ export interface components {
         /** @description State conflict or idempotency-key conflict */
         Conflict: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1188,6 +1198,8 @@ export interface components {
         /** @description Request rate limit exceeded */
         TooManyRequests: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 /** @description Seconds to wait before retrying the request. */
                 "Retry-After"?: string;
                 [name: string]: unknown;
@@ -1199,6 +1211,8 @@ export interface components {
         /** @description Service dependency unavailable */
         ServiceUnavailable: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1208,6 +1222,8 @@ export interface components {
         /** @description Queue entry updated */
         QueueMutationOK: {
             headers: {
+                /** @description Request correlation identifier for support and tracing. */
+                "X-Request-ID"?: string;
                 [name: string]: unknown;
             };
             content: {
@@ -1247,6 +1263,8 @@ export interface operations {
             /** @description Service is alive */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1269,6 +1287,8 @@ export interface operations {
             /** @description Service dependencies are ready */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1292,6 +1312,8 @@ export interface operations {
             /** @description Current user context */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1314,6 +1336,8 @@ export interface operations {
             /** @description Product policy */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1336,6 +1360,8 @@ export interface operations {
             /** @description Role policies */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1358,6 +1384,8 @@ export interface operations {
             /** @description Navigation sections */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1380,6 +1408,8 @@ export interface operations {
             /** @description Dashboard metrics */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1402,6 +1432,8 @@ export interface operations {
             /** @description Appointment list */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1431,6 +1463,8 @@ export interface operations {
             /** @description Appointment created */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1466,6 +1500,8 @@ export interface operations {
             /** @description Appointment cancelled */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1492,6 +1528,8 @@ export interface operations {
             /** @description Calendar data */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1514,6 +1552,8 @@ export interface operations {
             /** @description Queue entries */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1543,6 +1583,8 @@ export interface operations {
             /** @description Walk-in registered */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1660,6 +1702,8 @@ export interface operations {
             /** @description Pet records */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1689,6 +1733,8 @@ export interface operations {
             /** @description Pet created */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1724,6 +1770,8 @@ export interface operations {
             /** @description Pet archived */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1753,6 +1801,8 @@ export interface operations {
             /** @description Pet document metadata */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1788,6 +1838,8 @@ export interface operations {
             /** @description Document metadata registered */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1826,6 +1878,8 @@ export interface operations {
             /** @description Document metadata archived */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1852,6 +1906,8 @@ export interface operations {
             /** @description Pet records */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1874,6 +1930,8 @@ export interface operations {
             /** @description Prescription drafts and finalized prescriptions */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1904,6 +1962,8 @@ export interface operations {
             /** @description Prescription draft created */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1939,6 +1999,8 @@ export interface operations {
             /** @description Prescription finalized */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1965,6 +2027,8 @@ export interface operations {
             /** @description Prescription templates */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1987,6 +2051,8 @@ export interface operations {
             /** @description Clinical notes */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2009,6 +2075,8 @@ export interface operations {
             /** @description Lab tests */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2038,6 +2106,8 @@ export interface operations {
             /** @description Lab order created */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2073,6 +2143,8 @@ export interface operations {
             /** @description Lab order status updated */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2109,6 +2181,8 @@ export interface operations {
             /** @description Lab result uploaded */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2135,6 +2209,8 @@ export interface operations {
             /** @description Billing dashboard */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2164,6 +2240,8 @@ export interface operations {
             /** @description Invoice created */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2199,6 +2277,8 @@ export interface operations {
             /** @description Invoice voided */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2225,6 +2305,8 @@ export interface operations {
             /** @description Analytics */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2247,6 +2329,8 @@ export interface operations {
             /** @description Feedback dashboard */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2269,6 +2353,8 @@ export interface operations {
             /** @description Veterinarians */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2291,6 +2377,8 @@ export interface operations {
             /** @description Staff members */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2320,6 +2408,8 @@ export interface operations {
             /** @description Staff member invited or reactivated */
             201: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2345,6 +2435,8 @@ export interface operations {
             /** @description Audit log entries */
             200: {
                 headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
                     [name: string]: unknown;
                 };
                 content: {

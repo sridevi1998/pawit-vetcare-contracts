@@ -53,6 +53,11 @@ paths:
       responses:
         "200":
           description: Service is alive
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -70,6 +75,11 @@ paths:
       responses:
         "200":
           description: Service dependencies are ready
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -88,6 +98,11 @@ paths:
       responses:
         "200":
           description: Current user context
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -104,6 +119,11 @@ paths:
       responses:
         "200":
           description: Product policy
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -120,6 +140,11 @@ paths:
       responses:
         "200":
           description: Role policies
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -136,6 +161,11 @@ paths:
       responses:
         "200":
           description: Navigation sections
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -152,6 +182,11 @@ paths:
       responses:
         "200":
           description: Dashboard metrics
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -168,6 +203,11 @@ paths:
       responses:
         "200":
           description: Appointment list
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -195,6 +235,11 @@ paths:
       responses:
         "201":
           description: Appointment created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -226,6 +271,11 @@ paths:
       responses:
         "200":
           description: Appointment cancelled
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -250,6 +300,11 @@ paths:
       responses:
         "200":
           description: Calendar data
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -266,6 +321,11 @@ paths:
       responses:
         "200":
           description: Queue entries
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -290,6 +350,11 @@ paths:
       responses:
         "201":
           description: Walk-in registered
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -404,6 +469,11 @@ paths:
       responses:
         "200":
           description: Pet records
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -427,6 +497,11 @@ paths:
       responses:
         "201":
           description: Pet created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -459,6 +534,11 @@ paths:
       responses:
         "200":
           description: Pet archived
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -485,6 +565,11 @@ paths:
       responses:
         "200":
           description: Pet document metadata
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -518,6 +603,11 @@ paths:
       responses:
         "201":
           description: Document metadata registered
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -553,6 +643,11 @@ paths:
       responses:
         "200":
           description: Document metadata archived
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -578,6 +673,11 @@ paths:
       responses:
         "200":
           description: Pet records
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -594,6 +694,11 @@ paths:
       responses:
         "200":
           description: Prescription drafts and finalized prescriptions
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -620,6 +725,11 @@ paths:
       responses:
         "201":
           description: Prescription draft created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -652,6 +762,11 @@ paths:
       responses:
         "200":
           description: Prescription finalized
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -676,6 +791,11 @@ paths:
       responses:
         "200":
           description: Prescription templates
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -692,6 +812,11 @@ paths:
       responses:
         "200":
           description: Clinical notes
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -708,6 +833,11 @@ paths:
       responses:
         "200":
           description: Lab tests
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -731,6 +861,11 @@ paths:
       responses:
         "201":
           description: Lab order created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -762,6 +897,11 @@ paths:
       responses:
         "200":
           description: Lab order status updated
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -798,6 +938,11 @@ paths:
       responses:
         "201":
           description: Lab result uploaded
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -822,6 +967,11 @@ paths:
       responses:
         "200":
           description: Billing dashboard
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -846,6 +996,11 @@ paths:
       responses:
         "201":
           description: Invoice created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -877,6 +1032,11 @@ paths:
       responses:
         "200":
           description: Invoice voided
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -901,6 +1061,11 @@ paths:
       responses:
         "200":
           description: Analytics
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -917,6 +1082,11 @@ paths:
       responses:
         "200":
           description: Feedback dashboard
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -933,6 +1103,11 @@ paths:
       responses:
         "200":
           description: Veterinarians
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -949,6 +1124,11 @@ paths:
       responses:
         "200":
           description: Staff members
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -973,6 +1153,11 @@ paths:
       responses:
         "201":
           description: Staff member invited or reactivated
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -996,6 +1181,11 @@ paths:
       responses:
         "200":
           description: Audit log entries
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -1050,30 +1240,55 @@ components:
   responses:
     BadRequest:
       description: Invalid request
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
     Unauthorized:
       description: Authentication required
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
     Forbidden:
       description: Role does not have required permission
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
     NotFound:
       description: Resource not found in tenant scope
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
     Conflict:
       description: State conflict or idempotency-key conflict
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
@@ -1081,6 +1296,10 @@ components:
     TooManyRequests:
       description: Request rate limit exceeded
       headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
         Retry-After:
           description: Seconds to wait before retrying the request.
           schema:
@@ -1092,12 +1311,22 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     ServiceUnavailable:
       description: Service dependency unavailable
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
     QueueMutationOK:
       description: Queue entry updated
+      headers:
+        X-Request-ID:
+          description: Request correlation identifier for support and tracing.
+          schema:
+            type: string
       content:
         application/json:
           schema:
