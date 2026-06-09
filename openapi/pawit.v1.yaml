@@ -1080,6 +1080,12 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     TooManyRequests:
       description: Request rate limit exceeded
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying the request.
+          schema:
+            type: string
+            pattern: "^[0-9]+$"
       content:
         application/json:
           schema:
