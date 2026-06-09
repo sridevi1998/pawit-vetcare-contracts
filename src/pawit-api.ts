@@ -1188,6 +1188,8 @@ export interface components {
         /** @description Request rate limit exceeded */
         TooManyRequests: {
             headers: {
+                /** @description Seconds to wait before retrying the request. */
+                "Retry-After"?: string;
                 [name: string]: unknown;
             };
             content: {
