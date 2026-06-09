@@ -1202,11 +1202,12 @@ components:
       type: apiKey
       in: cookie
       name: pawit_access
-      description: HttpOnly Secure SameSite=Strict JWT cookie.
+      description: HttpOnly Secure SameSite=Strict JWT cookie signed with HS256.
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: JWT signed with HS256 using the configured PawIt signing key.
   parameters:
     IdempotencyKey:
       name: Idempotency-Key
