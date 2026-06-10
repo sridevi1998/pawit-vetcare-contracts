@@ -458,6 +458,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clinical-notes/{id}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finalize a draft SOAP/clinical note
+         * @description Veterinarians can finalize a draft clinical note and optionally share it with the pet parent.
+         */
+        post: operations["finalizeClinicalNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/lab-tests": {
         parameters: {
             query?: never;
@@ -995,6 +1015,9 @@ export interface components {
         ClinicalNoteMutationResult: {
             clinicalNote: components["schemas"]["ClinicalNote"];
             idempotent?: boolean;
+        };
+        FinalizeClinicalNoteRequest: {
+            shareWithPetParent?: boolean;
         };
         LabTestList: {
             items: components["schemas"]["LabTest"][];
@@ -2116,6 +2139,44 @@ export interface operations {
             400: components["responses"]["BadRequest"];
             401: components["responses"]["Unauthorized"];
             403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    finalizeClinicalNote: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Resource identifier. */
+                id: components["parameters"]["PathID"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinalizeClinicalNoteRequest"];
+            };
+        };
+        responses: {
+            /** @description Clinical note finalized */
+            200: {
+                headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicalNoteMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
             429: components["responses"]["TooManyRequests"];
         };
