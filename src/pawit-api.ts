@@ -386,7 +386,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List tenant prescriptions */
+        /**
+         * List tenant prescriptions
+         * @description Pet-parent callers with only shared-record permissions receive only prescriptions shared with them for pets where they are active guardians with record-view access.
+         */
         get: operations["listPrescriptions"];
         put?: never;
         /**
@@ -444,7 +447,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List clinical notes and consultations */
+        /**
+         * List clinical notes and consultations
+         * @description Pet-parent callers with only shared-record permissions receive only clinical notes shared with them for pets where they are active guardians with record-view access.
+         */
         get: operations["listClinicalNotes"];
         put?: never;
         /**
@@ -485,7 +491,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List lab tests and diagnostic reports */
+        /**
+         * List lab tests and diagnostic reports
+         * @description Pet-parent callers with only shared-record permissions receive only lab results shared with them for pets where they are active guardians with record-view access.
+         */
         get: operations["listLabTests"];
         put?: never;
         /** Create an internal or external lab order */

@@ -691,6 +691,7 @@ paths:
       operationId: listPrescriptions
       tags: [Clinical]
       summary: List tenant prescriptions
+      description: Pet-parent callers with only shared-record permissions receive only prescriptions shared with them for pets where they are active guardians with record-view access.
       responses:
         "200":
           description: Prescription drafts and finalized prescriptions
@@ -809,6 +810,7 @@ paths:
       operationId: listClinicalNotes
       tags: [Clinical]
       summary: List clinical notes and consultations
+      description: Pet-parent callers with only shared-record permissions receive only clinical notes shared with them for pets where they are active guardians with record-view access.
       responses:
         "200":
           description: Clinical notes
@@ -904,6 +906,7 @@ paths:
       operationId: listLabTests
       tags: [Clinical]
       summary: List lab tests and diagnostic reports
+      description: Pet-parent callers with only shared-record permissions receive only lab results shared with them for pets where they are active guardians with record-view access.
       responses:
         "200":
           description: Lab tests
