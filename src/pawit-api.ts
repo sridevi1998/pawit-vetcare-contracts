@@ -447,7 +447,11 @@ export interface paths {
         /** List clinical notes and consultations */
         get: operations["listClinicalNotes"];
         put?: never;
-        post?: never;
+        /**
+         * Create a draft SOAP/clinical note
+         * @description Veterinarians and vet technicians can create draft clinical notes. Finalization remains a separate veterinarian workflow.
+         */
+        post: operations["createClinicalNote"];
         delete?: never;
         options?: never;
         head?: never;
@@ -972,6 +976,25 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             sharedWithPetParent: boolean;
+        };
+        /** @description At least one clinical note field is required across reasonForVisit, subjective, objective, assessment, or plan. */
+        CreateClinicalNoteRequest: {
+            locationId: string;
+            petId: string;
+            appointmentId?: string;
+            reasonForVisit?: string;
+            subjective?: string;
+            objective?: string;
+            assessment?: string;
+            plan?: string;
+            vitals?: {
+                [key: string]: unknown;
+            };
+            sharedWithPetParent?: boolean;
+        };
+        ClinicalNoteMutationResult: {
+            clinicalNote: components["schemas"]["ClinicalNote"];
+            idempotent?: boolean;
         };
         LabTestList: {
             items: components["schemas"]["LabTest"][];
@@ -2060,6 +2083,40 @@ export interface operations {
                 };
             };
             401: components["responses"]["Unauthorized"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    createClinicalNote: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Safe retry key for mutation requests. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateClinicalNoteRequest"];
+            };
+        };
+        responses: {
+            /** @description Clinical note draft created */
+            201: {
+                headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClinicalNoteMutationResult"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            409: components["responses"]["Conflict"];
             429: components["responses"]["TooManyRequests"];
         };
     };
