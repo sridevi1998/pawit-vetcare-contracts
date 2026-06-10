@@ -860,6 +860,45 @@ paths:
           $ref: "#/components/responses/Conflict"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+  /api/v1/clinical-notes/{id}/finalize:
+    post:
+      operationId: finalizeClinicalNote
+      tags: [Clinical]
+      summary: Finalize a draft SOAP/clinical note
+      description: Veterinarians can finalize a draft clinical note and optionally share it with the pet parent.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/PathID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FinalizeClinicalNoteRequest"
+      responses:
+        "200":
+          description: Clinical note finalized
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicalNoteMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /api/v1/lab-tests:
     get:
       operationId: listLabTests
@@ -2073,6 +2112,11 @@ components:
         clinicalNote:
           $ref: "#/components/schemas/ClinicalNote"
         idempotent:
+          type: boolean
+    FinalizeClinicalNoteRequest:
+      type: object
+      properties:
+        shareWithPetParent:
           type: boolean
     LabTestList:
       type: object
