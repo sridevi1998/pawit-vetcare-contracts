@@ -825,6 +825,41 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "429":
           $ref: "#/components/responses/TooManyRequests"
+    post:
+      operationId: createClinicalNote
+      tags: [Clinical]
+      summary: Create a draft SOAP/clinical note
+      description: Veterinarians and vet technicians can create draft clinical notes. Finalization remains a separate veterinarian workflow.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClinicalNoteRequest"
+      responses:
+        "201":
+          description: Clinical note draft created
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicalNoteMutationResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
   /api/v1/lab-tests:
     get:
       operationId: listLabTests
@@ -2004,6 +2039,40 @@ components:
           type: string
           format: date-time
         sharedWithPetParent:
+          type: boolean
+    CreateClinicalNoteRequest:
+      type: object
+      required: [locationId, petId]
+      description: At least one clinical note field is required across reasonForVisit, subjective, objective, assessment, or plan.
+      properties:
+        locationId:
+          type: string
+        petId:
+          type: string
+        appointmentId:
+          type: string
+        reasonForVisit:
+          type: string
+        subjective:
+          type: string
+        objective:
+          type: string
+        assessment:
+          type: string
+        plan:
+          type: string
+        vitals:
+          type: object
+          additionalProperties: true
+        sharedWithPetParent:
+          type: boolean
+    ClinicalNoteMutationResult:
+      type: object
+      required: [clinicalNote]
+      properties:
+        clinicalNote:
+          $ref: "#/components/schemas/ClinicalNote"
+        idempotent:
           type: boolean
     LabTestList:
       type: object
