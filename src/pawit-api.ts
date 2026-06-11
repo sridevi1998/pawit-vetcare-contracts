@@ -38,6 +38,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a role-scoped authenticated session */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clear the authenticated session cookie */
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -707,6 +741,32 @@ export interface components {
                 message: string;
             };
         };
+        LoginRequest: {
+            /** @description Friendly hospital portal identifier, such as HOSP-001. */
+            hospitalId?: string;
+            /** @description Tenant identifier for direct API clients. */
+            tenantId?: string;
+            /** Format: email */
+            email: string;
+            /** Format: password */
+            password: string;
+            role?: components["schemas"]["Role"];
+        };
+        AuthSession: {
+            userId: string;
+            tenantId: string;
+            role: components["schemas"]["Role"];
+            displayName: string;
+            /** Format: email */
+            email: string;
+            token: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        LogoutResponse: {
+            /** @constant */
+            status: "signed_out";
+        };
         MeResponse: {
             user: {
                 id: string;
@@ -1353,6 +1413,62 @@ export interface operations {
             404: components["responses"]["NotFound"];
             429: components["responses"]["TooManyRequests"];
             503: components["responses"]["ServiceUnavailable"];
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Authenticated session */
+            200: {
+                headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
+                    /** @description HttpOnly pawit_access session cookie. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthSession"];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Session cleared */
+            200: {
+                headers: {
+                    /** @description Request correlation identifier for support and tracing. */
+                    "X-Request-ID"?: string;
+                    /** @description Expired pawit_access session cookie. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LogoutResponse"];
+                };
+            };
+            429: components["responses"]["TooManyRequests"];
         };
     };
     getCurrentUser: {
