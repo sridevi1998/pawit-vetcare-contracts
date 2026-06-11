@@ -21,6 +21,8 @@ security:
 tags:
   - name: System
     description: Health, readiness, and platform-level endpoints.
+  - name: Auth
+    description: Login, logout, and role-scoped session endpoints.
   - name: Current User
     description: Authenticated user, tenant, and clinic context.
   - name: Product Policy
@@ -88,6 +90,64 @@ paths:
           $ref: "#/components/responses/ServiceUnavailable"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      tags: [Auth]
+      summary: Create a role-scoped authenticated session
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Authenticated session
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
+            Set-Cookie:
+              description: HttpOnly pawit_access session cookie.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      tags: [Auth]
+      summary: Clear the authenticated session cookie
+      security: []
+      responses:
+        "200":
+          description: Session cleared
+          headers:
+            X-Request-ID:
+              description: Request correlation identifier for support and tracing.
+              schema:
+                type: string
+            Set-Cookie:
+              description: Expired pawit_access session cookie.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResponse"
         "429":
           $ref: "#/components/responses/TooManyRequests"
   /api/v1/me:
@@ -1442,6 +1502,52 @@ components:
               type: string
             message:
               type: string
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        hospitalId:
+          type: string
+          description: Friendly hospital portal identifier, such as HOSP-001.
+        tenantId:
+          type: string
+          description: Tenant identifier for direct API clients.
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 1
+        role:
+          $ref: "#/components/schemas/Role"
+    AuthSession:
+      type: object
+      required: [userId, tenantId, role, displayName, email, token, expiresAt]
+      properties:
+        userId:
+          type: string
+        tenantId:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+        displayName:
+          type: string
+        email:
+          type: string
+          format: email
+        token:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    LogoutResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: signed_out
     MeResponse:
       type: object
       required: [user, clinic]
